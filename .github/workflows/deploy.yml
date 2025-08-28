@@ -43,8 +43,10 @@ jobs:
 
       - name: Deploy to AWS
         run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            npx cdk deploy --require-approval never --all -c stage=prod
-          else
-            npx cdk deploy --require-approval never --all -c stage=dev
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            echo "🚀 Deploying to DEV"
+            npx cdk deploy --all --require-approval never -c stage=dev
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "🚀 Deploying to PROD"
+            npx cdk deploy --all --require-approval never -c stage=prod
           fi

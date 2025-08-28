@@ -25,3 +25,5 @@ coverage/
 .idea/
 *.swp
 *.swo
+
+call-api.sh
