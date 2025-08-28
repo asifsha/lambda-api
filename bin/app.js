@@ -3,6 +3,11 @@ const cdk = require("aws-cdk-lib");
 const { ApiStack } = require("../lib/api-stack");
 
 const app = new cdk.App();
-new ApiStack(app, "LambdaApiStack", {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
+
+const stage = app.node.tryGetContext("stage") || "dev";
+
+// 👇 unique stack name per stage
+new ApiStack(app, `ApiStack-${stage}`, {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  stage: stage,
 });
