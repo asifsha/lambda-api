@@ -37,3 +37,5 @@ jobs:
             npx cdk deploy --require-approval never --all -c stage=prod
           else
             echo "🚀 Deploying to DEV"
+            npx cdk deploy --require-approval never --all -c stage=dev
+          fi
