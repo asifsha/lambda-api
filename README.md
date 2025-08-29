@@ -8,6 +8,7 @@ This project is a **serverless REST API** built on AWS, using:
 - **AWS CDK (Cloud Development Kit)** — Infrastructure as code
 - **GitHub Actions** — Continuous deployment (CI/CD) to AWS
 
+
 ---
 
 ## 📂 Project Structure
