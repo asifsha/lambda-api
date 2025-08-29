@@ -30,7 +30,7 @@ jobs:
           node-version: 18
 
       - name: Install deps
-        run: npm ci
+        run: npm install
 
       - name: CDK Bootstrap (idempotent)
         run: npx cdk bootstrap aws://412381746256/ap-southeast-2
