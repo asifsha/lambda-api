@@ -1,52 +1,39 @@
-name: Deploy CDK App
+name: Deploy to AWS
 
 on:
   push:
     branches:
-      - main   # deploy to PROD
-      - dev    # deploy to DEV
+      - main
+      - dev   # deploy dev stack on dev branch
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    permissions:
-      id-token: write   # required for OIDC federation
-      contents: read    # required for checkout
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Configure AWS credentials from IAM Role
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::412381746256:role/githubAccessECRECSRole
-          aws-region: ap-southeast-2   # adjust if needed
+          aws-region: ap-southeast-2
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Bootstrap CDK (first-time only)
-        run: npx cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
-        env:
-          AWS_REGION: ap-southeast-2
-          AWS_ACCOUNT_ID: 412381746256
-
-      - name: Synthesize CloudFormation
-        run: npx cdk synth
+      - name: CDK Bootstrap (if not already bootstrapped)
+        run: npx cdk bootstrap aws://412381746256/ap-southeast-2
 
       - name: Deploy to AWS
         run: |
-          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
-            echo "🚀 Deploying to DEV"
-            npx cdk deploy --all --require-approval never -c stage=dev
-          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          if [ "${{ github.ref_name }}" = "main" ]; then
             echo "🚀 Deploying to PROD"
-            npx cdk deploy --all --require-approval never -c stage=prod
-          fi
+            npx cdk deploy --require-approval never --all -c stage=prod
+          else
+            echo "🚀 Deploying to DEV"
